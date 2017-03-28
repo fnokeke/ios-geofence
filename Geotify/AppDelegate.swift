@@ -55,6 +55,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       notification.soundName = "Default"
       UIApplication.shared.presentLocalNotificationNow(notification)
     }
+    
+    launchPAM()
+
   }
   
   func note(fromRegionIdentifier identifier: String) -> String? {
@@ -63,6 +66,50 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let index = geotifications?.index { $0?.identifier == identifier }
     return index != nil ? geotifications?[index!]?.note : nil
   }
+  
+  
+  func launchPAM() {
+    NSLog("Launching PAM app")
+    var url = URL(string: "io.smalldatalab.pam://")!
+    if UIApplication.shared.canOpenURL(url) {
+      NSLog("PAM is installed.")
+    } else {
+      url = URL(string: "itms-apps://itunes.apple.com/us/app/pam/id959793807")!
+      NSLog("PAM NOT installed.")
+    }
+    
+    if #available(iOS 10.0, *) {
+      UIApplication.shared.open(url)
+    } else {
+      UIApplication.shared.openURL(url)
+    }
+    
+  }
+
+  func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) {
+    
+    switch application.applicationState {
+      
+    case .active:
+      //app is currently active, can update badges count here
+      NSLog("App is currently active")
+      break
+      
+    case .inactive:
+      //app is transitioning from background to foreground (user taps notification), do what you need when user taps here
+      NSLog("App is inactive: transitioning from background to foreground")
+      break
+      
+    case .background:
+      //app is in background, if content-available key of your notification is set to 1, poll to your backend to retrieve data and update your interface here
+      NSLog("App is completely in background mode")
+      break
+      
+    }
+    
+    
+  }
+  
   
 }
 
