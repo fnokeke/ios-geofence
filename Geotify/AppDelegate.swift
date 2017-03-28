@@ -40,7 +40,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     application.registerUserNotificationSettings(UIUserNotificationSettings(types: [.sound, .alert, .badge], categories: nil))
     UIApplication.shared.cancelAllLocalNotifications()
     
+    if (launchOptions != nil) {
+      NSLog("got remote notification here!")
+    } else {
+      NSLog("got remote notification as NIL!")
+    }
+    
     return true
+  }
+  
+  func application(_ application: UIApplication, didReceive notification: UILocalNotification) {
+    launchPAM()
+    NSLog("Clicked notification. Now opening PAM...")
   }
   
   func handleEvent(forRegion region: CLRegion!) {
@@ -56,8 +67,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       UIApplication.shared.presentLocalNotificationNow(notification)
     }
     
-    launchPAM()
-
   }
   
   func note(fromRegionIdentifier identifier: String) -> String? {
@@ -70,23 +79,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   
   func launchPAM() {
     NSLog("Launching PAM app")
-    var url = URL(string: "io.smalldatalab.pam://")!
-    if UIApplication.shared.canOpenURL(url) {
-      NSLog("PAM is installed.")
-    } else {
-      url = URL(string: "itms-apps://itunes.apple.com/us/app/pam/id959793807")!
-      NSLog("PAM NOT installed.")
-    }
-    
+    let url = URL(string: "io.smalldatalab.pam://")!
     if #available(iOS 10.0, *) {
-      UIApplication.shared.open(url)
+      UIApplication.shared.open(url, options: [:], completionHandler: nil)
     } else {
       UIApplication.shared.openURL(url)
     }
     
+    
+    //    if UIApplication.shared.canOpenURL(url) {
+    //      NSLog("PAM is installed.")
+    //    } else {
+    //      url = URL(string: "https://itunes.apple.com/us/app/pam/id959793807")!
+    //      NSLog("PAM NOT installed.")
+    //    }
+    //
+    //    if #available(iOS 10.0, *) {
+    //      UIApplication.shared.open(url)
+    //    } else {
+    //      UIApplication.shared.openURL(url)
+    //    }
+    //    
   }
 
   func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) {
+    NSLog("App received remote notification.")
+
     
     switch application.applicationState {
       
